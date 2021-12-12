@@ -42,9 +42,29 @@ resource "aws_iam_role_policy" "s3rolepolicy" {
   
 }
 
+resource "aws_instance" "s3instance" {
+      ami  = "ami-0ed9277fb7eb570c9"
+      instance_type = "t2.micro"
+      key_name = "kp-mbpm1pro-nova"
+      iam_instance_profile = aws_iam_instance_profile.ec2Instaceprof.id
+      associate_public_ip_address = true
+      user_data = <<EOF
+       #!/bin/bash
+        sudo chown ec2-user /var/log
+       aws s3 cp /var/log s3://group1mofor --recursive
+EOF
+  tags = {
+    Name = "Instancegrp1"
+  }
+} 
 
 
+resource "aws_iam_instance_profile" "ec2Instaceprof" {
+  name = "ec2Instaceprof"
+  role = aws_iam_role.s3accessRoleforEC2.name
 
+  
+}
 
 resource "aws_iam_role" "s3accessRoleforEC2" {
   name = "s3accessRoleforEC2"
@@ -66,5 +86,4 @@ resource "aws_iam_role" "s3accessRoleforEC2" {
   ]
 }
 EOF
-
 }
