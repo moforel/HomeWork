@@ -1,7 +1,20 @@
 resource "aws_s3_bucket" "s3bucket" {
     bucket = "group1mofor"
     acl = "private"
+      server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        kms_master_key_id = aws_kms_key.mykms1.arn
+        sse_algorithm     = "aws:kms"
+      }
+    }
+  }
   
+}
+
+resource "aws_kms_key" "mykms1" {
+  description             = "KMS key for group1mofor"
+  enable_key_rotation = true
 }
 
 
